@@ -61,7 +61,7 @@ def aline_list(message):
 def load_gifts(file_path):
     """Carrega a lista de presentes de um arquivo."""
     try:
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='utf-8') as file:
             return file.read().splitlines()
     except FileNotFoundError:
         return []
@@ -103,7 +103,7 @@ def handle_message(message):
 def add_gift_to_list(gift, file_path, message):
     """Adiciona um item à lista de presentes em um arquivo."""
     try:
-        with open(file_path, 'a') as file:
+        with open(file_path, 'a', encoding='utf-8') as file:
             # Carrega os presentes existentes na lista
             gifts = load_gifts(file_path)
 
@@ -128,7 +128,7 @@ def add_gift_to_list(gift, file_path, message):
             item = f'{next_number}. {gift}'
 
             # Adiciona o item à lista
-            file.write(item + '\n')
+            file.write(item.encode('utf-8').decode() + '\n')
 
         bot.send_message(message.chat.id, 'Item adicionado à lista de presentes.')
 
@@ -144,7 +144,7 @@ def add_gift_to_list(gift, file_path, message):
 def delete_item_from_list(item_number, file_path, message):
     """Deleta um item da lista de presentes em um arquivo."""
     try:
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='utf-8') as file:
             gifts = file.read().splitlines()
 
         if len(gifts) >= int(item_number):
@@ -156,7 +156,7 @@ def delete_item_from_list(item_number, file_path, message):
                 parts[0] = str(i)
                 gifts[i - 1] = '. '.join(parts)
 
-            with open(file_path, 'w') as file:
+            with open(file_path, 'w', encoding='utf-8') as file:
                 file.write('\n'.join(gifts))  # Escreve a lista atualizada no arquivo
                 file.write('\n')  # Adiciona uma nova linha vazia
 
