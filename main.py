@@ -116,8 +116,13 @@ def add_gift_to_list(gift, file_path, message):
                 if shortened_url:
                     gift = shortened_url
             else:
-                # Capitaliza a primeira letra do item de texto
-                gift = gift.capitalize()
+                # Extrai a URL do texto usando expressão regular
+                url_match = re.search(r'(https?://\S+)', gift)
+                if url_match:
+                    url = url_match.group(0)
+                    shortened_url = shorten_url(url)
+                    if shortened_url:
+                        gift = gift.replace(url, shortened_url)
 
             # Constrói o item com o número
             item = f'{next_number}. {gift}'
@@ -134,6 +139,7 @@ def add_gift_to_list(gift, file_path, message):
             aline_list(message)
     except IOError:
         bot.send_message(message.chat.id, 'Ocorreu um erro ao adicionar o item à lista de presentes.')
+
 
 def delete_item_from_list(item_number, file_path, message):
     """Deleta um item da lista de presentes em um arquivo."""
@@ -152,6 +158,7 @@ def delete_item_from_list(item_number, file_path, message):
 
             with open(file_path, 'w') as file:
                 file.write('\n'.join(gifts))  # Escreve a lista atualizada no arquivo
+                file.write('\n')  # Adiciona uma nova linha vazia
 
             bot.send_message(message.chat.id, 'Item removido da lista de presentes.')
         else:
