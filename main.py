@@ -1,6 +1,8 @@
+import requests
 import telebot
 from telebot import types
 from typing import Dict, List
+import re
 
 lists: Dict[str, List[str]] = {
     'angelo': [],
@@ -64,6 +66,19 @@ def load_gifts(file_path):
     except FileNotFoundError:
         return []
 
+def shorten_url(url):
+    """Encurta uma URL usando a API do encurtador.dev."""
+    api_endpoint = 'https://api.encurtador.dev/encurtamentos'
+    payload = {'url': url}
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(api_endpoint, json=payload, headers=headers)
+
+    if response.status_code == 200 or response.status_code == 201:
+        data = response.json()
+        return data['urlEncurtada']
+    else:
+        return None
+
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     """Manipula as mensagens enviadas pelo usuário."""
@@ -89,16 +104,21 @@ def add_gift_to_list(gift, file_path, message):
     """Adiciona um item à lista de presentes em um arquivo."""
     try:
         with open(file_path, 'a') as file:
-            # Carrega os presentes existentes na lista
             gifts = load_gifts(file_path)
 
-            # Verifica o próximo número da lista
             next_number = len(gifts) + 1
 
-            # Constrói o item com o número
+            # Verifica se há uma URL no item usando regex
+            url_match = re.search(r'(https?://\S+)', gift)
+            if url_match:
+                url = url_match.group(0)
+                shortened_url = shorten_url(url)
+                if shortened_url:
+                    # Substitui a URL original pela URL encurtada
+                    gift = gift.replace(url, shortened_url)
+
             item = f'{next_number}. {gift}'
 
-            # Adiciona o item à lista
             file.write(item + '\n')
 
         bot.send_message(message.chat.id, 'Item adicionado à lista de presentes.')
