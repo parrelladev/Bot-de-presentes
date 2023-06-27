@@ -115,6 +115,9 @@ def add_gift_to_list(gift, file_path, message):
                 shortened_url = shorten_url(gift)
                 if shortened_url:
                     gift = shortened_url
+            else:
+                # Capitaliza a primeira letra do item de texto
+                gift = gift.capitalize()
 
             # Constrói o item com o número
             item = f'{next_number}. {gift}'
