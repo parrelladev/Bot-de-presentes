@@ -104,24 +104,31 @@ def add_gift_to_list(gift, file_path, message):
     """Adiciona um item à lista de presentes em um arquivo."""
     try:
         with open(file_path, 'a') as file:
+            # Carrega os presentes existentes na lista
             gifts = load_gifts(file_path)
 
+            # Verifica o próximo número da lista
             next_number = len(gifts) + 1
 
-            # Verifica se há uma URL no item usando regex
-            url_match = re.search(r'(https?://\S+)', gift)
-            if url_match:
-                url = url_match.group(0)
-                shortened_url = shorten_url(url)
+            # Verifica se é um link
+            if gift.startswith('http://') or gift.startswith('https://'):
+                shortened_url = shorten_url(gift)
                 if shortened_url:
-                    # Substitui a URL original pela URL encurtada
-                    gift = gift.replace(url, shortened_url)
+                    gift = shortened_url
 
+            # Constrói o item com o número
             item = f'{next_number}. {gift}'
 
+            # Adiciona o item à lista
             file.write(item + '\n')
 
         bot.send_message(message.chat.id, 'Item adicionado à lista de presentes.')
+
+        # Exibe a lista atualizada ao usuário
+        if 'angelo' in file_path:
+            angelo_list(message)
+        elif 'aline' in file_path:
+            aline_list(message)
     except IOError:
         bot.send_message(message.chat.id, 'Ocorreu um erro ao adicionar o item à lista de presentes.')
 
