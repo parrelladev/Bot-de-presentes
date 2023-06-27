@@ -7,8 +7,11 @@ lists: Dict[str, List[str]] = {
     'aline': []
 }
 
+# Definir o diretório do arquivo main
+main_directory = './'
+
 # Definir o diretório das listas de presentes
-lists_directory = r'C:\Users\angel\OneDrive\Documentos\GitHub\Bot-de-presentes\listas\\'
+lists_directory = main_directory + 'listas/'
 
 # Definir os caminhos dos arquivos de lista
 list_path = {
